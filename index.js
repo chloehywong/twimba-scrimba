@@ -19,7 +19,35 @@ document.addEventListener('click', function(e){
     else if(e.target.dataset.delete){
         handleDeleteClick(e.target.dataset.delete)
     }
+    else if(e.target.dataset.comment){
+        handleTweetReplyClick(e.target.dataset.comment)
+    }
 })
+
+function handleTweetReplyClick(tweetId){
+    const tweetReplyInput = document.getElementById(`tweet-reply-input-${tweetId}`)
+
+    const targetTweetObj = tweetsData.filter(function(tweet){
+        return tweet.uuid === tweetId
+    })[0]
+
+    if(tweetReplyInput.value){
+        console.log(targetTweetObj.replies.unshift({
+            handle: `@Chloe.hy`,
+            profilePic: `images/momo.png`,
+            likes: 0,
+            retweets: 0,
+            tweetText: tweetReplyInput.value,
+            replies: [],
+            isLiked: false,
+            isRetweeted: false,
+            uuid: uuidv4()
+        }))
+
+        render()
+        tweetReplyInput.value = ''
+    }
+}
 
  
 function handleLikeClick(tweetId){ 
@@ -106,7 +134,7 @@ function getFeedHtml(){
         
         if(tweet.replies.length > 0){
             tweet.replies.forEach(function(reply){
-                repliesHtml+=`
+                repliesHtml+=`             
 <div class="tweet-reply">
     <div class="tweet-inner">
         <img src="${reply.profilePic}" class="profile-pic">
@@ -120,7 +148,6 @@ function getFeedHtml(){
             })
         }
         
-          
         feedHtml += `
 <div class="tweet">
     <div class="tweet-inner">
@@ -152,6 +179,16 @@ function getFeedHtml(){
         <button class="deleteBtn" data-delete="${tweet.uuid}">X</button>           
     </div>
     <div class="hidden" id="replies-${tweet.uuid}">
+    <div class="tweet-reply">
+            <div class="tweet-inner">
+                <img src="images/momo.png" class="profile-pic">
+                    <div>
+                        <p class="handle">@Chloe.hy</p>
+                        <textarea placeholder="Write a reply" id="tweet-reply-input-${tweet.uuid}"></textarea>
+                    </div>   
+            </div>
+            <button class="replyBtn" id="reply-btn" data-comment="${tweet.uuid}">Reply</button>
+        </div>
         ${repliesHtml}
     </div>   
 </div>
